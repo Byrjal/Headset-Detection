@@ -8,15 +8,23 @@ Real-world use cases for implementing the detection in a headset can be vast. So
 - Trigger auto power-off to conserve battery.
 
 ## Get Started
-The reposity consists of:
+The repository consists of:
 - main.py
 - plot.py
 - Data
-  - h
+  - OldData
+  - NewData
 
+### main.py
+Multiple packages are imported.
+Seed-values are chosen.
+Directory are chosen.
+The .csv files in the chosen directory are read appended to a list called data_list.
+Then the data are combined and shuffled.
+This data are used to train and test the machine learning models.
+The train_and_evaluate function are defined and called.
 
-How users can get started with the project
-
+### plot.py
 <!--
 ## Contributions & Help
 This project has been conducted by Stine Byrjalsen in collaboration with RTX A/S.
