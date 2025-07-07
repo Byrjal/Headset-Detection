@@ -7,13 +7,14 @@ Real-world use cases for implementing the detection in a headset can be vast. So
 - Auto-play/pause music or videos when user wears or removes the headset.
 - Trigger auto power-off to conserve battery.
 
-## Get Started
+## Getting Started
 The repository consists of:
 - main.py
 - plot.py
 - Data
   - OldData
-  - NewData
+  - NewData\n
+You have to run ...
 
 ### main.py
 Multiple packages are imported.
@@ -25,6 +26,39 @@ This data are used to train and test the machine learning models.
 The train_and_evaluate function are defined and called.
 
 ### plot.py
+
+
+## Used Packages
+### NumPy
+NumPy is the fundamental package for scientific computing in Python. It is a Python library that provides a multidimensional array object, various derived objects (such as masked arrays and matrices), and an assortment of routines for fast operations on arrays, including mathematical, logical, shape manipulation, sorting, selecting, I/O, discrete Fourier transforms, basic linear algebra, basic statistical operations, random simulation and much more.
+```python
+import numpy as np
+```
+
+### os
+```python
+import os
+```
+
+### Matplotlib (.pyplot)
+```python
+import matplotlib.pyplot as plt
+```
+
+### scikit-learn
+```python
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import ConfusionMatrixDisplay
+```
 <!--
 ## Contributions & Help
 This project has been conducted by Stine Byrjalsen in collaboration with RTX A/S.
