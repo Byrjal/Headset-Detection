@@ -34,16 +34,39 @@ NumPy is the fundamental package for scientific computing in Python. It is a Pyt
 ```python
 import numpy as np
 ```
+NumPy documentation link:
+https://numpy.org/doc/stable/
+
+In this project, NumPy are used for:
+- random.seed
+- genfromtxt
+- shape
+- array
+- random.permutation
+- where
+
 
 ### os
 ```python
 import os
 ```
 
+In this project, os are used for:
+- path.join
+- listdir
+
+
 ### Matplotlib (.pyplot)
 ```python
 import matplotlib.pyplot as plt
 ```
+In this project, matplotlib.pyplot is used for:
+- plotting the confusion matrix
+  - cm.Blues
+  - title
+  - savefig
+  - show
+    
 
 ### scikit-learn
 ```python
@@ -59,6 +82,11 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import ConfusionMatrixDisplay
 ```
+
+In this project, scikit-learn or sklearn is used for:
+- 
+
+
 <!--
 ## Contributions & Help
 This project has been conducted by Stine Byrjalsen in collaboration with RTX A/S.
