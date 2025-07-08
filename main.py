@@ -2,6 +2,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
+from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
@@ -12,17 +13,13 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
-
 from sklearn.metrics import ConfusionMatrixDisplay
-
-from sklearn.naive_bayes import GaussianNB
 
 seed_value = 42
 np.random.seed(seed_value)
 
 # Define the directory paths
 dir_path_DUT1 = 'DUT1'
-dir_path_DUT2 = 'DUT2'
 
 
 # Function to read all CSV files in a directory
@@ -45,7 +42,7 @@ def read_csv_files(directory, folder_type='HeadsetOff', step=2):
 
 
 # The choice of the directories; it can take multiple directories
-directories = [dir_path_DUT2]
+directories = [dir_path_DUT1]
 combined_data = []
 for directory in directories:
     data_no_head = read_csv_files(directory, folder_type='HeadsetOff', step=5)
