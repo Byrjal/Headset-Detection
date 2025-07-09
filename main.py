@@ -1,157 +1,83 @@
+"""
+Main script to load dataset, train and evaluate multiple machine learning models,
+with options for frequency range, downsampling, cross-validation, and misclassifications.
+"""
+
 import numpy as np
-import os
-import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
-from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
+from data_loader import read_csv_files, load_dataset
+from models import get_models
+from training_evaluation import train_and_evaluate, cross_validation
 
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import make_pipeline
-from sklearn.metrics import ConfusionMatrixDisplay
+# ======================= Configuration Parameters =======================
+DATASET_NAME = "Data/OldData/DUT1"
+dataset_name = DATASET_NAME.split('/')[-1]  # Extract 'DUT1' for logging
 
-seed_value = 42
-np.random.seed(seed_value)
+USE_STEP = False            # True = use downsampled, False = full sample rate
+STEP = 2                    # Downsampling step (only used if USE_STEP is True)
+USE_FREQ_RANGE = False      # True = use smaller freq range, False = use full freq range
+ROW_START = 889             # Start index for freq range (only used if USE_FREQ_RANGE is True)
+ROW_END = -1071             # End index (only used if USE_FREQ_RANGE is True; negative means count from end)
+COLUMNS = slice(1, 2)       # Which column(s) to use (0=freq, 1=amplitude, 2=phase)
+USE_CV = False              # True = run cross-validation
+FOLDS = 9                   # Number of folds for CV (only used if USE_CV = True)
+PRINT_MISCLASSIFIED = True  # True = prints the misclassified filenames
 
-# Define the directory paths
-dir_path_DUT1 = 'DUT1'
+np.random.seed(42)
 
+# ======================= Load and Prepare Dataset =======================
+X, y, file_names = load_dataset(DATASET_NAME,  use_step=USE_STEP, step=STEP, use_freq_range=USE_FREQ_RANGE, row_start=ROW_START, row_end=ROW_END, col_slice=COLUMNS)
 
-# Function to read all CSV files in a directory
-def read_csv_files(directory, folder_type='HeadsetOff', step=2):
-    subdirectory = os.path.join(directory, folder_type)
-    data_list = []
-    for file_name in os.listdir(subdirectory):
-        if file_name.endswith('.csv'):
-            file_path = os.path.join(subdirectory, file_name)
-            data = np.genfromtxt(file_path, delimiter=';', skip_header=3)
-            #data = data[:, 1:-2]
-            # data = data[889:-1071, 1:-2] #881:-1110 #[:, 1:-1] #880:-1070
-            #data = data[::step, 1:-2]
-            data = data[889:-1071:step, 1:-2]
-            #print(np.shape(data))
-            # Reshape to get each column stacked vertically
-            stacked_columns = data.T.flatten()
-            data_list.append((stacked_columns, file_name))
-    return data_list
+# Shuffle data
+shuffled_indices = np.random.permutation(len(X))
+X, y, file_names = X[shuffled_indices], y[shuffled_indices], file_names[shuffled_indices]
 
-
-# The choice of the directories; it can take multiple directories
-directories = [dir_path_DUT1]
-combined_data = []
-for directory in directories:
-    data_no_head = read_csv_files(directory, folder_type='HeadsetOff', step=5)
-    data_head = read_csv_files(directory, folder_type='HeadsetOn', step=5)
-    # Putting labels on (no head = 0, head = 1):
-    combined_data.extend([(vector, 0, file_name) for vector, file_name in data_no_head])
-    combined_data.extend([(vector, 1, file_name) for vector, file_name in data_head])
-
-# Extract features and labels
-X = np.array([item[0] for item in combined_data])
-y = np.array([item[1] for item in combined_data])
-file_names = np.array([item[2] for item in combined_data])  # Store file names
-print(X.shape)
-# Shuffle the combined data and labels
-shuffled_indices = np.random.permutation(X.shape[0])
-X_shuffled = X[shuffled_indices]
-y_shuffled = y[shuffled_indices]
-
-# Split the shuffled data into training and testing sets (also, remembering the file names)
+# Split into train/test
 X_train, X_test, y_train, y_test, file_names_train, file_names_test = train_test_split(
-    X_shuffled, y_shuffled, file_names[shuffled_indices], test_size=0.2, random_state=42, stratify=y_shuffled
+    X, y, file_names, test_size=0.3, stratify=y, random_state=42
 )
 
+# ======================= Getting Frequency Range (for display only) =======================
+freq_data = read_csv_files(directory=DATASET_NAME,
+                            folder_type='HeadsetOff',
+                            use_step=False,
+                            step=1,
+                            use_freq_range=False,
+                            row_start=0,
+                            row_end=None,
+                            col_slice=slice(0, 1))
+freq_vector = freq_data[0][0] # Get frequency values from first file
 
-# Function that train, predict, and evaluate the different models
-def train_and_evaluate(model, model_name, X_train, y_train, X_test, y_test, file_names_test):
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    y_pred_train = model.predict(X_train)
+# Compute frequency bounds
+freq_start = freq_vector[ROW_START]
+end_index = ROW_END if ROW_END is not None else len(freq_vector)
+if end_index < 0:
+    end_index = len(freq_vector) + end_index
+freq_end = freq_vector[end_index]
 
-    accuracy_test = accuracy_score(y_test, y_pred)
-    acc_train = accuracy_score(y_train, y_pred_train)
-    conf_matrix = confusion_matrix(y_test, y_pred)
+# ======================= Display Configuration Info =======================
+print(f"{'=' * 20} Configurations {'=' * 20}")
+print(f"Dataset: {dataset_name}")
+print(f"Step Size: {STEP if USE_STEP else 'Full'}")
+print(f"Freq Range: {freq_start/10e8:.3f} - {freq_end/10e8:.3f} GHz"
+      if USE_FREQ_RANGE
+      else f"Freq Range: {freq_vector[0]/10e8} - {freq_vector[-1]/10e8} GHz")
+if USE_CV:
+    print(f"Number of Folds: {FOLDS}")
+print(f" ")
 
-    print(f'{model_name} Test Accuracy: {accuracy_test * 100:.2f}%')
-    print(f'{model_name} Train Accuracy: {acc_train * 100:.2f}%')
-    #print(f'{model_name} Confusion Matrix:')
-    print(conf_matrix)
-    #print(f'{model_name} Classification Report:')
-    #print(class_report)
-
-    # Identify misclassifications
-    #misclassified_indices = np.where(y_pred != y_test)[0]
-    #misclassified_file_names = file_names_test[misclassified_indices]
-
-    #if len(misclassified_file_names) > 0:
-    #    print(f'Misclassified files for {model_name}:')
-    #    for file_name in misclassified_file_names:
-    #        print(file_name)
-    #    print(f'\n')
-    #else:
-    #    print(f'All files classified correctly for {model_name}. \n')
-
-    # Plot the confusion matrix
-    disp = ConfusionMatrixDisplay(confusion_matrix=conf_matrix)
-    disp.plot(cmap=plt.cm.Blues)
-    plt.title(f'{model_name} CM - DUT2 (SFI - Less Samples - Step 5)')
-    safe_name = model_name.replace(" ", "")
-    #plt.savefig(f'DUT2_CM_{safe_name}_SFI_LessSamples_step5.pdf')
-    plt.show()
-
-def train_and_evaluate_cv(model, model_name, X, y):
-    scores = cross_val_score(model, X, y, cv=9, scoring='accuracy')
-
-    print(f'{model_name} Cross-Validation Accuracy Scores: {scores}')
-    print(f'{model_name} Mean Accuracy: {scores.mean() * 100:.2f}%')
-    print(f'{model_name} Standard Deviation: {scores.std() * 100:.2f}%')
-
-    model.fit(X, y)
-    y_pred = model.predict(X)
-    conf_matrix = confusion_matrix(y, y_pred)
-    print(f'{model_name} Confusion Matrix:\n{conf_matrix}')
-
-NaiveBayes_model = GaussianNB()
-train_and_evaluate_cv(NaiveBayes_model, 'Naive Bayes', X_shuffled, y_shuffled)
-
-# Logistic Regression
-logistic_model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=200))
-train_and_evaluate_cv(logistic_model, 'Logistic Regression', X_shuffled, y_shuffled)
-
-# K-Nearest Neighbor (KNN)
-knn_model = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=3))
-train_and_evaluate_cv(knn_model, 'KNN', X_shuffled, y_shuffled)
-
-# Decision Tree
-decision_tree_model = DecisionTreeClassifier()
-train_and_evaluate_cv(decision_tree_model, 'Decision Tree', X_shuffled, y_shuffled)
-
-# Random Forest
-random_forest_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)
-train_and_evaluate_cv(random_forest_model, 'Random Forest', X_shuffled, y_shuffled)
-
-
-
-NaiveBayes_model = GaussianNB()
-train_and_evaluate(NaiveBayes_model, 'Naive Bayes', X_train, y_train, X_test, y_test, file_names_test)
-
-# Logistic Regression
-logistic_model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=200))
-train_and_evaluate(logistic_model, 'Logistic Regression', X_train, y_train, X_test, y_test, file_names_test)
-
-# K-Nearest Neighbor (KNN)
-knn_model = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=3))
-train_and_evaluate(knn_model, 'KNN', X_train, y_train, X_test, y_test, file_names_test)
-
-# Decision Tree
-decision_tree_model = DecisionTreeClassifier()
-train_and_evaluate(decision_tree_model, 'Decision Tree', X_train, y_train, X_test, y_test, file_names_test)
-
-# Random Forest
-random_forest_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)
-train_and_evaluate(random_forest_model, 'Random Forest', X_train, y_train, X_test, y_test, file_names_test)
+# ======================= Train and Evaluate Models =======================
+models = get_models()
+for name, model in models.items():
+    if USE_CV:
+        cross_validation(model, name, X, y, FOLDS)
+    else:
+        train_and_evaluate(model, name,
+            X_train, y_train, X_test, y_test,
+            file_name_test=file_names_test, dataset_name=DATASET_NAME,
+            use_step=USE_STEP, step=STEP,
+            use_freq_range=USE_FREQ_RANGE,
+            save_plot=True,
+            plot_dir="Plots/",
+            print_misclassified=PRINT_MISCLASSIFIED)
