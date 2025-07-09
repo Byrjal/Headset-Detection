@@ -9,23 +9,46 @@ Real-world use cases for implementing the detection in a headset can be vast. So
 
 ## Getting Started
 The repository consists of:
-- main.py
-- plot.py
+- `main.py`
+- `data_loader.py`
+- `models.py`
+- `training_evaluation.py`
+- `plot.py`
 - Data
   - OldData
-  - NewData\n
-You have to run ...
+  - NewData
+- Tests
+  - `test.py`
+
+In `main.py` multiple option can be chosen between, depending on the use case. 
 
 ### main.py
-Multiple packages are imported.
+NumPy and sklearn packages are imported.
 Seed-values are chosen.
 Directory are chosen.
+The `data_loader.py` are called.
+The data are combined and shuffled.
+The `models.py` are called.
+The `training_evaluation.py` are called.
+The `plot.py` are called (optional, can be enabled).
+The `test.py` are called (optional, can be enabled, are disabled as default).
+
+### data_loader.py
+NumPy and os packages are imprted.
+Seed-values are chosen.
 The .csv files in the chosen directory are read appended to a list called data_list.
-Then the data are combined and shuffled.
-This data are used to train and test the machine learning models.
-The train_and_evaluate function are defined and called.
+
+### models.py
+Sklearn packages are imported.
+The machine learning models and there hyperparameters are defined.
+
+### training_evaluation.py
+NumPy, matplotlib and sklearn packages are imported.
+The data are used to train and test the machine learning models.
+The train_and_evaluate function are defined.
 
 ### plot.py
+NumPy and matplotlib packages are imported.
 
 
 ## Used Packages
@@ -38,12 +61,12 @@ NumPy documentation link:
 https://numpy.org/doc/stable/
 
 In this project, NumPy are used for:
-- random.seed
-- genfromtxt
-- shape
-- array
-- random.permutation
-- where
+- `random.seed`
+- `genfromtxt`
+- `shape`
+- `array`
+- `random.permutation`
+- `where`
 
 
 ### os
@@ -52,8 +75,8 @@ import os
 ```
 
 In this project, os are used for:
-- path.join
-- listdir
+- `path.join`
+- `listdir`
 
 
 ### Matplotlib (.pyplot)
@@ -62,10 +85,10 @@ import matplotlib.pyplot as plt
 ```
 In this project, matplotlib.pyplot is used for:
 - plotting the confusion matrix
-  - cm.Blues
-  - title
-  - savefig
-  - show
+  - `cm.Blues`
+  - `title`
+  - `savefig`
+  - `show`
     
 
 ### scikit-learn
@@ -84,7 +107,7 @@ from sklearn.metrics import ConfusionMatrixDisplay
 ```
 
 In this project, scikit-learn or sklearn is used for:
-- 
+- ...
 
 
 <!--
