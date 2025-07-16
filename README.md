@@ -1,6 +1,6 @@
 # Headset-Detection
 
-This project takes `.csv` data files from scattering parameters measured from the headset (using a network analysor) and utilises different machine learning models to detect or differentiate between the two states: the user wearing the headset or not (e.g. placed on a table).<br>
+This project takes `.csv` data files from scattering parameters measured from the headset (using a network analyser) and utilises different machine learning models to detect or differentiate between the two states: the user wearing the headset or not (e.g. placed on a table).<br>
 Real-world use cases for implementing the detection in a headset can be:
 - Pause/resume calls depending on whether the headset is on the head.
 - It can reduce call misses.
