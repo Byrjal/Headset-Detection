@@ -11,7 +11,7 @@ from models import get_models
 from training_evaluation import train_and_evaluate, cross_validation
 
 # ======================= Configuration Parameters =======================
-DATASET_NAME = "Data/OldData/DUT1"
+DATASET_NAME = "Data/DUT1"
 dataset_name = DATASET_NAME.split('/')[-1]  # Extract 'DUT1' for logging
 
 USE_STEP = False            # True = use downsampled, False = full sample rate

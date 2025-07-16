@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.metrics import accuracy_score, confusion_matrix
-from sklearn.metrics import ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.model_selection import cross_val_score
 
 def train_and_evaluate(model, model_name, X_train, y_train, X_test, y_test, file_name_test, dataset_name, use_step, step, use_freq_range, save_plot, plot_dir, print_misclassified):
