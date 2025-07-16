@@ -151,11 +151,5 @@ In this project, scikit-learn is used for:
 - `make_pipeline`: Constructs a pipeline (a sequence of data transformers with an optional final predictor) from the given estimators. Imported from sklearn.pipeline.
 
 
-## Reflections
-- Proper normalisation and data splitting are crucial.
-- Ensuring reproducibility is important.
-- The dataset might be to the simple side, thus most models achieve a very high accuracy.
-
-
 ## Contributions
 This project originated as part of a 9th semester internship by Stine Byrjalsen and Julie Timmermann Werge, in collaboration with RTX A/S. Since then, improvements have been made by Stine Byrjalsen as part of a student assistant position at RTX A/S. 
