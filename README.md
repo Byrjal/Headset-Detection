@@ -1,11 +1,10 @@
 # Headset-Detection
 
-This project takes `.csv` data files from scattering parameters measured from the headset (using a network analysor) and utilises different machine learning models to detect or differentiate between the two states: the user wearing the headset or not (e.g. placed on a table).<br>
-Real-world use cases for implementing the detection in a headset can be:
-- Pause/resume calls depending on whether the headset is on the head.
-- It can reduce call misses.
-- Auto-play/pause music or videos when user wears or removes the headset.
-- Trigger auto power-off to conserve battery.
+This project takes `.csv` data files from scattering parameters measured from the headset (using a network analyser) and utilises different machine learning models to detect or differentiate between the two states: the user wearing the headset or not (e.g. placed on a table).
+
+The current software is configured to use S11 amplitude, focus on a narrowed frequency range (1.880-1.930 GHz), and perform binary classification. During development, different configurations were tested, including the full frequency range, various downsampling steps, and the use of additional S-parameters and phase data. However, the main goal of this software was to evaluate whether just the S11 amplitude in a narrowed frequency band would be sufficient for accurate classification - and results indicate that it is. All machine learning models achieved high accuracy, with the only exception of the Naive Bayes classifier (which is the most simple of them all). Downsampling was also tested and did not significantly degrade performance.
+
+The software is not limited to the current configuration, as parameter configurations also supports full or partial frequency ranges, downsampling at custom steps, different machine learning models, cross-validation, and work with other columns from the data (e.g. phase or both amplitude and phase). However, generalisation to other headsets or data measurements can be a limitation, but the software is expected to work well as long as S11 remains the primary input.
 
 
 ## Getting Started
@@ -155,12 +154,6 @@ In this project, scikit-learn is used for:
 - `ConfusionMatrixDisplay`: Visualise the confusion matrix. Imported from sklearn.metrics.
 - `StandardScaler`: Standardise features by removing the mean and scaling to unit variance. Imported from sklearn.preprocessing.
 - `make_pipeline`: Constructs a pipeline (a sequence of data transformers with an optional final predictor) from the given estimators. Imported from sklearn.pipeline.
-
-
-## Reflections
-- Proper normalisation and data splitting are crucial.
-- Ensuring reproducibility is important.
-- The dataset might be to the simple side, thus most models achieve a very high accuracy.
 
 
 ## Contributions
