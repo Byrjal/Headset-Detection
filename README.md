@@ -2,6 +2,11 @@
 
 This project takes `.csv` data files from scattering parameters measured from the headset (using a network analyser) and utilises different machine learning models to detect or differentiate between the two states: the user wearing the headset or not (e.g. placed on a table).
 
+The current software is configured to use S11 amplitude, focus on a narrowed frequency range (1.880-1.930 GHz), and perform binary classification. During development, different configurations were tested, including the full frequency range, various downsampling steps, and the use of additional S-parameters and phase data. However, the main goal of this software was to evaluate whether just the S11 amplitude in a narrowed frequency band would be sufficient for accurate classification - and results indicate that it is. All machine learning models achieved high accuracy, with the only exception of the Naive Bayes classifier (which is the most simple of them all). Downsampling was also tested and did not significantly degrade performance.
+
+The software is not limited to the current configuration, as parameter configurations also supports full or partial frequency ranges, downsampling at custom steps, different machine learning models, cross-validation, and work with other columns from the data (e.g. phase or both amplitude and phase). However, generalisation to other headsets or data measurements can be a limitation, but the software is expected to work well as long as S11 remains the primary input.
+
+
 ## Getting Started
 The project consists of:
 - `main.py`: Loads data, trains, and evaluates models. Calls the following three files.
