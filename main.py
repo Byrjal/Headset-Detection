@@ -16,13 +16,13 @@ dataset_name = DATASET_NAME.split('/')[-1]  # Extract 'DUT1' for logging
 
 USE_STEP = False            # True = use downsampled, False = full sample rate
 STEP = 2                    # Downsampling step (only used if USE_STEP is True)
-USE_FREQ_RANGE = False      # True = use smaller freq range, False = use full freq range
+USE_FREQ_RANGE = True      # True = use smaller freq range, False = use full freq range
 ROW_START = 889             # Start index for freq range (only used if USE_FREQ_RANGE is True)
 ROW_END = -1071             # End index (only used if USE_FREQ_RANGE is True; negative means count from end)
 COLUMNS = slice(1, 2)       # Which column(s) to use (0=freq, 1=amplitude, 2=phase)
 USE_CV = False              # True = run cross-validation
 FOLDS = 9                   # Number of folds for CV (only used if USE_CV = True)
-PRINT_MISCLASSIFIED = True  # True = prints the misclassified filenames
+PRINT_MISCLASSIFIED = False  # True = prints the misclassified filenames
 
 np.random.seed(42)
 
